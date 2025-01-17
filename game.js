@@ -137,7 +137,7 @@ function title_screen(delta) {
 
     let scaled_x = canvas.width / WIDTH;
     let scaled_y = canvas.height / HEIGHT;
-    context.fillRect(mouse_x, mouse_y, 50, 50);
+    context.fillRect(mouse_x * scaled_x, mouse_y * scaled_y, 50, 50);
 
 }
 
