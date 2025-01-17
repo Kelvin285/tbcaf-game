@@ -60,6 +60,15 @@ function resizeCanvas() {
     canvas.height = window.innerHeight;
 }
 
+let mouse_x = 0;
+let mouse_y = 0;
+
+canvas.addEventListener('mousemove', function(event) {
+    const rect = canvas.getBoundingClientRect();
+    mouse_x = event.clientX - rect.x;
+    mouse_y = event.clientY - rect.y;
+});
+
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
@@ -89,15 +98,23 @@ function DrawTextCentered(text, x, y, size) {
     context.fillText(text, x * scaled_x, y * scaled_y);
 }
 
-let lastTime = performance.now();
+function DrawTextButton(text, x, y, size) {
+    let scaled_x = canvas.width / WIDTH;
+    let scaled_y = canvas.height / HEIGHT;
+
+    let font = (size * 48 * Math.min(scaled_x, scaled_y)) + 'px "Yanone Kaffeesatz"';
+    context.font = font;
+    context.textAlign = 'center';
+    context.fillText(text, x * scaled_x, y * scaled_y);
+
+    let metrics = context.measureText(text);
+    if (mouse_x >= x && mouse_y >= y && mouse_x <= x + metrics.width && mouse_y <= y + metrics.height) {
+        alert("Mouse in button");
+    }
+}
+
 let timer = 0;
-function draw() {
-    let currentTime = performance.now();
-
-    let delta = Math.max((currentTime - lastTime) / 1000, 1.0 / 1000.0);
-
-    lastTime = performance.now();
-
+function title_screen(delta) {
     const gradient = context.createLinearGradient(0, 0, 0, canvas.height);
     gradient.addColorStop(0, tbcaf_light_brown);
     gradient.addColorStop(1, 'black');
@@ -113,6 +130,28 @@ function draw() {
     timer += delta;
 
     tex_tbcafLogo.DrawCentered(WIDTH - 80, 64, 128, 128, 0, 0, tex_tbcafLogo.image.width * 0.4, tex_tbcafLogo.image.height);
+
+    if (DrawTextButton("PLAY", WIDTH / 2, HEIGHT / 2, 1.0)) {
+
+    }
+
+    let scaled_x = canvas.width / WIDTH;
+    let scaled_y = canvas.height / HEIGHT;
+    context.fillRect(mouse_x, mouse_y, 50, 50);
+
+}
+
+let current_view = title_screen;
+
+let lastTime = performance.now();
+function draw() {
+    let currentTime = performance.now();
+
+    let delta = Math.max((currentTime - lastTime) / 1000, 1.0 / 1000.0);
+
+    lastTime = performance.now();
+
+    current_view(delta);
     
     requestAnimationFrame(draw);
 }
